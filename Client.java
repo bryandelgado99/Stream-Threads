@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class Client {
     public static void main(String[] args) {
 
-        while(true){
+        do {
 
             Scanner scanner = new Scanner(System.in);
 
@@ -20,22 +20,31 @@ public class Client {
 
                 /////////////////////////////////////////////////////////////////////////
 
-                    // Creación de buffer de entrada y salida
-                    BufferedReader entrada = new BufferedReader(
-                            new InputStreamReader(socket_Client.getInputStream())
-                    );
-                    PrintWriter salida = new PrintWriter(socket_Client.getOutputStream(), true);
+                // Creación de buffer de entrada y salida
+                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket_Client.getInputStream()));
+                PrintWriter salida = new PrintWriter(socket_Client.getOutputStream(), true);
 
-                    // Escritura de datos de entrada
-                    String mensaje_salida = scanner.nextLine();
-                    salida.println(mensaje_salida);
+                String datosRecibidos;
 
-                    // Lectura de datos del buffer de entrada
-                    String datos_recibidos = entrada.readLine();
-                    System.out.println("Los datos recibidos son: " + datos_recibidos);
-            }catch (IOException E){
-                E.printStackTrace();
+                while ((datosRecibidos = entrada.readLine()) != null) {
+                    System.out.println("Server: " + datosRecibidos);
+
+                    if (datosRecibidos.equals("No more questions")) {
+                        break;
+                    } else if (datosRecibidos.equals("Next question")) {
+                        continue;
+                    } else if (datosRecibidos.startsWith("Wrong.") || datosRecibidos.equals("Correct")) {
+                        continue;
+                    } else {
+                        System.out.print("Escriba su respuesta: ");
+                        String answers = scanner.nextLine();
+                        salida.println(answers);
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
+        } while (true);
     }
 }
